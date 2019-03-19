@@ -38,6 +38,11 @@ public final class Gameboard {
         return positions[column][row] == player
     }
     
+    public func isEmptyPosition(at position: GameboardPosition) -> Bool {
+        let (column, row) = (position.column, position.row)
+        return positions[column][row] == nil
+    }
+
     // MARK: - Private
     
     private func initialPositions() -> [[Player?]] {
