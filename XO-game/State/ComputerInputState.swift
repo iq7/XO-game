@@ -11,16 +11,16 @@ import Foundation
 public class ComputerInputState: GameState {
     
     public private(set) var isCompleted = false
-    
+
     private(set) weak var gameViewController: GameViewController?
     private(set) weak var gameboard: Gameboard?
     private(set) weak var gameboardView: GameboardView?
     
     public let markViewPrototype: MarkView
     
-    init(markViewPrototype: MarkView, gameViewController: GameViewController, gameboard: Gameboard, gameboardView: GameboardView) {
-        self.markViewPrototype = markViewPrototype
+    init(gameViewController: GameViewController, gameboard: Gameboard, gameboardView: GameboardView) {
         self.gameViewController = gameViewController
+        self.markViewPrototype = gameViewController.currentPlayer.markViewPrototype
         self.gameboard = gameboard
         self.gameboardView = gameboardView
     }
@@ -29,14 +29,13 @@ public class ComputerInputState: GameState {
         guard let gameViewController = gameViewController else { return }
         switch gameViewController.currentPlayer {
         case .first:
-            gameViewController.firstPlayerTurnLabel.isHidden = false
-            gameViewController.secondPlayerTurnLabel.isHidden = true
-        case .second:
             gameViewController.firstPlayerTurnLabel.isHidden = true
             gameViewController.secondPlayerTurnLabel.isHidden = false
+        case .second:
+            gameViewController.firstPlayerTurnLabel.isHidden = false
+            gameViewController.secondPlayerTurnLabel.isHidden = true
         }
         gameViewController.winnerLabel.isHidden = true
-        print("SecondPlayerState")
         makeMove()
     }
     
@@ -56,7 +55,7 @@ public class ComputerInputState: GameState {
         
         self.gameboard?.setPlayer(gameViewController.currentPlayer, at: position)
         self.gameboardView?.placeMarkView(self.markViewPrototype.copy(), at: position)
-        self.isCompleted = true
         gameViewController.goToNextState()
+        self.isCompleted = true
     }
 }

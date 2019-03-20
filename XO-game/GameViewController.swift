@@ -15,7 +15,9 @@ class GameViewController: UIViewController {
     @IBOutlet var secondPlayerTurnLabel: UILabel!
     @IBOutlet var winnerLabel: UILabel!
     @IBOutlet var restartButton: UIButton!
-    
+
+    var gameMode: GameMode?
+
     private let gameboard = Gameboard()
     private var currentState: GameState! {
         didSet {
@@ -24,6 +26,7 @@ class GameViewController: UIViewController {
     }
     
     private lazy var referee = Referee(gameboard: self.gameboard)
+    var currentPlayer: Player = .first
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,34 +42,57 @@ class GameViewController: UIViewController {
     }
     
     private func goToFirstState() {
-        let player = Player.first
-        self.currentState = PlayerInputState(player: player,
-                                             markViewPrototype: player.markViewPrototype,
-                                             gameViewController: self,
+        self.currentPlayer = .first
+        self.currentState = PlayerInputState(gameViewController: self,
                                              gameboard: gameboard,
                                              gameboardView: gameboardView)
     }
     
-    private func goToNextState() {
+    // Не понял, как сообщить контроллеру,
+    // что компьютер походил
+    // Через замыкание что-то не получилось,
+    // поэтому сделал метод побличным
+    //private func goToNextState() {
+    func goToNextState() {
         if let winner = self.referee.determineWinner() {
             self.currentState = GameEndedState(winner: winner, gameViewController: self)
             return
+        } else if !gameboard.containsEmptyPosition() {
+            self.currentState = GameEndedState(winner: nil, gameViewController: self)
+            return
         }
-        if let playerInputState = currentState as? PlayerInputState {
-            let player = playerInputState.player.next
-            self.currentState = PlayerInputState(player: player,
-                                                 markViewPrototype: player.markViewPrototype,
-                                                 gameViewController: self,
-                                                 gameboard: gameboard,
-                                                 gameboardView: gameboardView)
+        currentPlayer = currentPlayer.next
+        switch currentPlayer {
+        case .first:
+            switchToPlayerInputState()
+        case .second:
+            guard let gameMode = gameMode else { return }
+            switch gameMode {
+            case .withHuman:
+                switchToPlayerInputState()
+            case .withComputer:
+                switchToComputerInputState()
+            }
         }
     }
     
+    private func switchToPlayerInputState() {
+        self.currentState = PlayerInputState(gameViewController: self,
+                                             gameboard: gameboard,
+                                             gameboardView: gameboardView)
+    }
+    
+    private func switchToComputerInputState() {
+        self.currentState = ComputerInputState(gameViewController: self,
+                                             gameboard: gameboard,
+                                             gameboardView: gameboardView)
+    }
+
     @IBAction func restartButtonTapped(_ sender: UIButton) {
         Log(.restartGame)
         gameboard.clear()
         gameboardView.clear()
-        goToFirstState()
+        //goToFirstState()
     }
 }
 
