@@ -43,7 +43,7 @@ public class ComputerInputState: GameState {
         repeat {
             let position = GameboardPosition(column: Int.random(in: 0..<GameboardSize.columns), row: Int.random(in: 0..<GameboardSize.rows))
             if gameboard?.isEmptyPosition(at: position) == true {
-                self.addMark(at: position)
+                self.gameboardView?.onSelectPosition?(position)
                 break
             }
         } while true
@@ -52,10 +52,10 @@ public class ComputerInputState: GameState {
     public func addMark(at position: GameboardPosition) {
         guard let gameViewController = gameViewController else { return }
         Log(.playerInput(player: gameViewController.currentPlayer, position: position))
-        
-        self.gameboard?.setPlayer(gameViewController.currentPlayer, at: position)
-        self.gameboardView?.placeMarkView(self.markViewPrototype.copy(), at: position)
-        gameViewController.goToNextState()
-        self.isCompleted = true
+        if self.gameboard?.isEmptyPosition(at: position) == true {
+            self.gameboard?.setPlayer(gameViewController.currentPlayer, at: position)
+            self.gameboardView?.placeMarkView(self.markViewPrototype.copy(), at: position)
+            self.isCompleted = true
+        }
     }
 }

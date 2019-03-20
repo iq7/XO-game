@@ -48,12 +48,7 @@ class GameViewController: UIViewController {
                                              gameboardView: gameboardView)
     }
     
-    // Не понял, как сообщить контроллеру,
-    // что компьютер походил
-    // Через замыкание что-то не получилось,
-    // поэтому сделал метод побличным
-    //private func goToNextState() {
-    func goToNextState() {
+    private func goToNextState() {
         if let winner = self.referee.determineWinner() {
             self.currentState = GameEndedState(winner: winner, gameViewController: self)
             return
@@ -92,7 +87,6 @@ class GameViewController: UIViewController {
         Log(.restartGame)
         gameboard.clear()
         gameboardView.clear()
-        //goToFirstState()
     }
 }
 
