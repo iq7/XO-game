@@ -14,7 +14,20 @@ public class MarkView: UIView, Copying {
     
     public var lineColor: UIColor = .black
     public var lineWidth: CGFloat = 7
-    public var textColor: UIColor = .red
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Понятно, что есть какой-то лейбл и он настраивается, но для чего - не понятно
+    public var textColor: UIColor = .red {
+        didSet { label.textColor = textColor }
+    }
+    
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Я так понял, что это очередь ходов ко второму пункту ДЗ
+    // И лейбл над ходом будет отображать номер хода
+    public var turnNumbers: [Int] = [] {
+        didSet {
+            label.text = turnNumbers.map { String($0) }.joined(separator: ",")
+        }
+    }
     
     internal private(set) lazy var shapeLayer: CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
@@ -23,6 +36,27 @@ public class MarkView: UIView, Copying {
         shapeLayer.strokeColor = lineColor.cgColor
         self.layer.addSublayer(shapeLayer)
         return shapeLayer
+    }()
+    
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Настройка констрейнтов лейбла
+    internal private(set) lazy var label: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: bounds.width, height: 0.1 * bounds.height))
+        label.textColor = textColor
+        label.textAlignment = .right
+        addSubview(label)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal,
+                           toItem: self, attribute: .top, multiplier: 1, constant: 4).isActive = true
+        NSLayoutConstraint(item: label, attribute: .height, relatedBy: .equal,
+                           toItem: self, attribute: .height, multiplier: 0.1, constant: 0).isActive = true
+        NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal,
+                           toItem: self, attribute: .leading, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: self, attribute: .trailing, relatedBy: .equal,
+                           toItem: label, attribute: .trailing, multiplier: 1, constant: 4).isActive = true
+        
+        return label
     }()
     
     // MARK: - Init
@@ -47,6 +81,7 @@ public class MarkView: UIView, Copying {
     
     public final override func layoutSubviews() {
         super.layoutSubviews()
+        updateLabel()
         updateShapeLayer()
     }
     
@@ -61,6 +96,44 @@ public class MarkView: UIView, Copying {
             setNeedsLayout()
             layoutIfNeeded()
         }
+    }
+    
+    // MARK: - Methods
+
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Видимо, это анимация рисования хода, но как с ней работать?
+    public func animateIn(duration: TimeInterval = 0.5,
+                          completion: @escaping () -> Void) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        animation.duration = duration
+        animation.fromValue = 0.0
+        animation.toValue = 1.0
+        shapeLayer.add(animation, forKey: nil)
+        CATransaction.commit()
+    }
+    
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Видимо, это анимация стирания хода, но как с ней работать?
+    public func animateOut(duration: TimeInterval = 0.5,
+                           completion: @escaping () -> Void) {
+        
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.duration = duration
+        animation.fromValue = 1.0
+        animation.toValue = 0.0
+        shapeLayer.add(animation, forKey: nil)
+        CATransaction.commit()
+    }
+    
+    // MARK: - UI
+    
+    private final func updateLabel() {
+        let size = 0.1 * bounds.height
+        label.font = UIFont.systemFont(ofSize: size, weight: .thin)
     }
     
     // MARK: - Template methods
