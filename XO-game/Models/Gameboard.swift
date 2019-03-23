@@ -12,8 +12,9 @@ public final class Gameboard {
     
     // MARK: - Properties
     
-    private lazy var positions: [[Player?]] = initialPositions()
-    
+    //private lazy var positions: [[Player?]] = initialPositions()
+    lazy var positions: [[Player?]] = initialPositions()
+
     // MARK: - public
     
     public func setPlayer(_ player: Player, at position: GameboardPosition) {
@@ -38,6 +39,23 @@ public final class Gameboard {
         return positions[column][row] == player
     }
     
+    public func isEmptyPosition(at position: GameboardPosition) -> Bool {
+        let (column, row) = (position.column, position.row)
+        return positions[column][row] == nil
+    }
+    
+    public func containsEmptyPosition() -> Bool {
+        
+        for row in 0 ..< GameboardSize.rows {
+            for column in 0 ..< GameboardSize.columns {
+                if positions[column][row] == nil {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     // MARK: - Private
     
     private func initialPositions() -> [[Player?]] {

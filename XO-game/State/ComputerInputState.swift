@@ -1,14 +1,14 @@
 //
-//  PlayerInputState.swift
+//  ComputerInputState.swift
 //  XO-game
 //
-//  Created by Андрей Тихонов on 18/03/2019.
+//  Created by Андрей Тихонов on 20/03/2019.
 //  Copyright © 2019 plasmon. All rights reserved.
 //
 
 import Foundation
 
-public class PlayerInputState: GameState {
+public class ComputerInputState: GameState {
     
     public private(set) var isCompleted = false
 
@@ -19,7 +19,6 @@ public class PlayerInputState: GameState {
     public let markViewPrototype: MarkView
     
     init(gameViewController: GameViewController, gameboard: Gameboard, gameboardView: GameboardView) {
-
         self.gameViewController = gameViewController
         self.markViewPrototype = gameViewController.currentPlayer.markViewPrototype
         self.gameboard = gameboard
@@ -30,15 +29,26 @@ public class PlayerInputState: GameState {
         guard let gameViewController = gameViewController else { return }
         switch gameViewController.currentPlayer {
         case .first:
-            gameViewController.firstPlayerTurnLabel.isHidden = false
-            gameViewController.secondPlayerTurnLabel.isHidden = true
-        case .second:
             gameViewController.firstPlayerTurnLabel.isHidden = true
             gameViewController.secondPlayerTurnLabel.isHidden = false
+        case .second:
+            gameViewController.firstPlayerTurnLabel.isHidden = false
+            gameViewController.secondPlayerTurnLabel.isHidden = true
         }
         gameViewController.winnerLabel.isHidden = true
+        makeMove()
     }
     
+    private func makeMove() {
+        repeat {
+            let position = GameboardPosition(column: Int.random(in: 0..<GameboardSize.columns), row: Int.random(in: 0..<GameboardSize.rows))
+            if gameboard?.isEmptyPosition(at: position) == true {
+                self.gameboardView?.onSelectPosition?(position)
+                break
+            }
+        } while true
+    }
+
     public func addMark(at position: GameboardPosition) {
         guard let gameViewController = gameViewController else { return }
         Log(.playerInput(player: gameViewController.currentPlayer, position: position))

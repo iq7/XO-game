@@ -14,10 +14,15 @@ public class MarkView: UIView, Copying {
     
     public var lineColor: UIColor = .black
     public var lineWidth: CGFloat = 7
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Понятно, что есть какой-то лейбл и он настраивается, но для чего - не понятно
     public var textColor: UIColor = .red {
         didSet { label.textColor = textColor }
     }
     
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Я так понял, что это очередь ходов ко второму пункту ДЗ
+    // И лейбл над ходом будет отображать номер хода
     public var turnNumbers: [Int] = [] {
         didSet {
             label.text = turnNumbers.map { String($0) }.joined(separator: ",")
@@ -33,6 +38,8 @@ public class MarkView: UIView, Copying {
         return shapeLayer
     }()
     
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Настройка констрейнтов лейбла
     internal private(set) lazy var label: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: bounds.width, height: 0.1 * bounds.height))
         label.textColor = textColor
@@ -92,7 +99,9 @@ public class MarkView: UIView, Copying {
     }
     
     // MARK: - Methods
-    
+
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Видимо, это анимация рисования хода, но как с ней работать?
     public func animateIn(duration: TimeInterval = 0.5,
                           completion: @escaping () -> Void) {
         CATransaction.begin()
@@ -105,6 +114,8 @@ public class MarkView: UIView, Copying {
         CATransaction.commit()
     }
     
+    // К чему этот код - не понял, но после удаления вернул на место
+    // Видимо, это анимация стирания хода, но как с ней работать?
     public func animateOut(duration: TimeInterval = 0.5,
                            completion: @escaping () -> Void) {
         
